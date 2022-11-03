@@ -1,54 +1,65 @@
 import React, { Component } from 'react';
+import { nanoid } from 'nanoid';
+import Form from './Form/Form';
 import { Box } from './App.styled';
-import { FeedbackOptions } from './FeedbackOptions/FeedbackOptions';
-import { Statistics } from './Statistics/Statistics';
+import { Contacts } from './Contacts/Contacts';
 import { Section } from './Section/Section';
-import { Notification } from './Notification/Notification';
+import { Filter } from './Filter/Filter';
 
 class App extends Component {
   state = {
-    good: 0,
-    neutral: 0,
-    bad: 0,
+    contacts: [
+      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
+      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
+      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
+      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
+    ],
+    filter: '',
   };
 
-  onLeaveFeedback = event => {
+  onFilterChange = event => {
+    this.setState({ filter: event.currentTarget.value });
+  };
+
+  onClickDelete = id => {
     this.setState(prevState => {
-      return { [event.target.name]: prevState[event.target.name] + 1 };
+      return {
+        contacts: prevState.contacts.filter(contact => contact.id !== id),
+      };
+    });
+    this.setState({
+      filter: '',
     });
   };
 
-  countTotalFeedback = () => {
-    const { good, neutral, bad } = this.state;
-    return good + neutral + bad;
-  };
+  formSubmitHandler = data => {
+    console.log(data);
+    console.log(this.state.contacts);
 
-  countPositiveFeedbackPercentage = () => {
-    const total = this.countTotalFeedback();
-    return Math.round((this.state.good / total) * 100);
+    const newContact = { id: nanoid(), name: data.name, number: data.number };
+
+    this.state.contacts.map(contact => contact.name).includes(newContact.name)
+      ? window.alert(`${newContact.name} is already in your phonebook`)
+      : this.setState(prevState => {
+          return {
+            contacts: [newContact, ...prevState.contacts],
+          };
+        });
   };
 
   render() {
+    const contactsFiltered = this.state.contacts.filter(contact =>
+      contact.name.toLowerCase().includes(this.state.filter.toLowerCase())
+    );
+
     return (
       <Box>
-        <Section title="Please, leave feedback">
-          <FeedbackOptions
-            options={Object.keys(this.state)}
-            onLeaveFeedback={this.onLeaveFeedback}
-          ></FeedbackOptions>
+        <Section title={'Phonebook'}>
+          <Form Submit={this.formSubmitHandler} />
         </Section>
-        <Section title="Statistics">
-          {this.countTotalFeedback() ? (
-            <Statistics
-              good={this.state.good}
-              neutral={this.state.neutral}
-              bad={this.state.bad}
-              total={this.countTotalFeedback()}
-              positivePercentage={this.countPositiveFeedbackPercentage()}
-            ></Statistics>
-          ) : (
-            <Notification message="There is no feedback" />
-          )}
+        <Section title={'Contacts'}>
+          <Filter value={this.state.filter} onChange={this.onFilterChange} />
+          <Contacts contacts={contactsFiltered} onClick={this.onClickDelete} />
         </Section>
       </Box>
     );

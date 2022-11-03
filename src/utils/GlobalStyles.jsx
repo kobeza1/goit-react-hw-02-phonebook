@@ -44,6 +44,18 @@ export const GlobalStyles = props => (
         margin: 0 auto;
         text-align: center;
       }
+      input {
+        width: 200px;
+        height: 20px;
+      }
+      button {
+        padding: 6px 15px;
+        border-radius: 30px;
+        border: none;
+        background-color: #d22566;
+        color: white;
+        font-weight: 700;
+      }
     `}
   />
 );
