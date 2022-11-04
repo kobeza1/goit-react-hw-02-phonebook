@@ -10,7 +10,9 @@ export const Contacts = ({ contacts, onClick }) => {
             <p>
               {name}: {number}
             </p>
-            <button onClick={() => onClick(id)}>Delete</button>
+            <button type="button" onClick={() => onClick(id)}>
+              Delete
+            </button>
           </Item>
         );
       })}
